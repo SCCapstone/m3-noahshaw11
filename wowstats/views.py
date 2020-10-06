@@ -20,6 +20,7 @@ def search(request):
         character_name = request.POST.get('character_name', None)
         try:
             response = requests.get(API_URL + 'characters/profile?region=' + region + '&realm=' + realm + '&name=' + character_name + '&fields=gear,raid_progression,mythic_plus_ranks').json()
+            print(response)
             results = create_response(response)
             return HttpResponse(results)
         except:
@@ -37,8 +38,13 @@ def create_response(json_obj):
     spec = json_obj['active_spec_name']
     achievement_points = json_obj['achievement_points']
     ilvl = json_obj['gear']['item_level_equipped']
-    current_raid_progression = json_obj['raid_progression']['nyalotha-the-waking-city']['summary']
+    nyalotha_raid_progression = json_obj['raid_progression']['nyalotha-the-waking-city']['summary']
+    eternal_palace_raid_progression = json_obj['raid_progression']['the-eternal-palace']['summary']
+    crucible_of_storms_raid_progression = json_obj['raid_progression']['crucible-of-storms']['summary']
+    battle_of_dazaralor_raid_progression = json_obj['raid_progression']['battle-of-dazaralor']['summary']
+    uldir_raid_progression = json_obj['raid_progression']['uldir']['summary']
     current_mythic_plus_ranking = json_obj['mythic_plus_ranks']['overall']['world']
+    
     response = """
     <form method="POST" action="/home/">
     <html>
@@ -47,9 +53,39 @@ def create_response(json_obj):
     <label for="textfield"><strong>Gender/Race:</strong> """ + gender.capitalize() + """ """ + race + """</label><br><br>
     <label for="textfield"><strong>Spec/Class:</strong> """ + spec + """ """ + character_class + """</label><br><br>
     <label for="textfield"><strong>Item Level:</strong> """ + str(ilvl) + """</label><br><br>
-    <label for="textfield"><strong>Current Raid Progression:</strong> """ + current_raid_progression + """</label><br><br>
+    
+    <label for="raids"><strong>Raid Progression:</strong></label>
+    <select name="raids" id="raids" onchange="changeProgression()">
+        <option value="Ny'alotha the Waking City">Ny'alotha the Waking City</option>
+        <option value="The Eternal Palace">The Eternal Palace</option>
+        <option value="Crucible of Storms">Crucible of Storms</option>
+        <option value="Battle of Dazaralor">Battle of Dazaralor</option>
+        <option value="Uldir">Uldir</option>
+    </select>
+    <label id="progression" for="progression">Select a Raid<strong></strong></label><br><br>
+    <script type="text/javascript">
+        function changeProgression() {
+            let lbl = document.getElementById('progression')
+            let raid = document.getElementById('raids').value
+            if (raid == "Ny'alotha the Waking City") {
+                lbl.innerText = '""" + nyalotha_raid_progression + """';
+            } else if (raid == "Ny'alotha the Waking City") {
+                lbl.innerText = '""" + eternal_palace_raid_progression + """';
+            } else if (raid == "The Eternal Palace") {
+                lbl.innerText = '""" + eternal_palace_raid_progression + """';
+            } else if (raid == "Crucible of Storms") {
+                lbl.innerText = '""" + crucible_of_storms_raid_progression + """';
+            } else if (raid == "Battle of Dazaralor") {
+                lbl.innerText = '""" + battle_of_dazaralor_raid_progression + """';
+            } else if (raid == "Uldir") {
+                lbl.innerText = '""" + uldir_raid_progression + """';
+            }
+        }
+    </script>
+    
     <label for="textfield"><strong>Current Mythic Plus Ranking:</strong> """ + str(current_mythic_plus_ranking) + """</label><br><br>
     <button type="back">Back</button>
     </html>
     </form>"""
+    
     return response
