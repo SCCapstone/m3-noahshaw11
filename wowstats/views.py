@@ -1,34 +1,40 @@
-from django.shortcuts import render, redirect
-from django.shortcuts import HttpResponse
 from django.core.exceptions import *
+from django.shortcuts import render, redirect, HttpResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 import requests
 
+# Base API URL for raider.io
 API_URL = 'https://raider.io/api/v1/'
 
+# Display initial form.html template to the client
 @csrf_exempt
 def home(request):
    template = loader.get_template('form.html')
    return HttpResponse(template.render())
 
+# Use the API of raider.io to retrieve WoW stats of the character inputted by the user
 @csrf_exempt
 def search(request):
     if request.method == 'POST':
+        # Retrieve the information inputted by the client
         region = request.POST.get('regions', None)
         realm = request.POST.get('realm', None)
         character_name = request.POST.get('character_name', None)
         try:
+            # Send a GET request to the API of raider.io using the infomration inputted by the client
             response = requests.get(API_URL + 'characters/profile?region=' + region + '&realm=' + realm + '&name=' + character_name + '&fields=gear,raid_progression,mythic_plus_ranks').json()
-            print(response)
             results = create_response(response)
+            # Return the retreived stats to the client
             return HttpResponse(results)
         except:
             return render(request, 'form.html')
     else:
         return render(request, 'form.html')
 
+# Create a response html message to send back to the client that displays the retrieved stats
 def create_response(json_obj):
+    # Extract the stats from the json message retrieved from raider.io
     thumbnail = json_obj['thumbnail_url']
     name = json_obj['name']
     realm = json_obj['realm']
@@ -45,6 +51,7 @@ def create_response(json_obj):
     uldir_raid_progression = json_obj['raid_progression']['uldir']['summary']
     current_mythic_plus_ranking = json_obj['mythic_plus_ranks']['overall']['world']
     
+    # Format an html response to send back to the client using the retrieved stats
     response = """
     <form method="POST" action="/home/">
     <html>
@@ -83,9 +90,10 @@ def create_response(json_obj):
         }
     </script>
     
-    <label for="textfield"><strong>Current Mythic Plus Ranking:</strong> """ + str(current_mythic_plus_ranking) + """</label><br><br>
+    <label for="textfield"><strong>Current Mythic Plus Ranking (World):</strong> """ + str(current_mythic_plus_ranking) + """</label><br><br>
     <button type="back">Back</button>
     </html>
     </form>"""
     
+    # Return the html message
     return response
