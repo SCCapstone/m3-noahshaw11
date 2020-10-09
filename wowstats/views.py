@@ -60,7 +60,6 @@ def create_response(json_obj):
     <label for="textfield"><strong>Gender/Race:</strong> """ + gender.capitalize() + """ """ + race + """</label><br><br>
     <label for="textfield"><strong>Spec/Class:</strong> """ + spec + """ """ + character_class + """</label><br><br>
     <label for="textfield"><strong>Item Level:</strong> """ + str(ilvl) + """</label><br><br>
-    
     <label for="raids"><strong>Raid Progression:</strong></label>
     <select name="raids" id="raids" onchange="changeProgression()">
         <option value="Ny'alotha the Waking City">Ny'alotha the Waking City</option>
@@ -89,7 +88,6 @@ def create_response(json_obj):
             }
         }
     </script>
-    
     <label for="textfield"><strong>Current Mythic Plus Ranking (World):</strong> """ + str(current_mythic_plus_ranking) + """</label><br><br>
     <button type="back">Back</button>
     </html>
