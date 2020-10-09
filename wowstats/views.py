@@ -68,7 +68,7 @@ def create_response(json_obj):
         <option value="Battle of Dazaralor">Battle of Dazaralor</option>
         <option value="Uldir">Uldir</option>
     </select>
-    <label id="progression" for="progression">Select a Raid<strong></strong></label><br><br>
+    <label id="progression" for="progression">""" + nyalotha_raid_progression + """<strong></strong></label><br><br>
     <script type="text/javascript">
         function changeProgression() {
             let lbl = document.getElementById('progression')
